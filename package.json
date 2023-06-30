@@ -1,7 +1,7 @@
 {
   "name": "codeial",
   "version": "1.0.0",
-  "description": "My Social Media Web Application",
+  "description": "A Social Media Web Application",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
