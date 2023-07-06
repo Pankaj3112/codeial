@@ -48,4 +48,5 @@ module.exports.create = function(req, res){
 //Get the sign in data
 module.exports.createSession = function(req, res){
     //TODO later
+    abcd
 }
