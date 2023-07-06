@@ -1,6 +1,21 @@
 const User = require('../model/user');
 
 //Fetch veiws and render them
+module.exports.profile = function(req, res){
+
+    User.findOne({_id: req.cookies.user_id})
+    .then(function(user){
+        return res.render('user_profile', {
+            title: "Codeial | Profile",
+            user: user
+        });
+    })
+    .catch(function(err){
+        console.log('Error in finding user while rendering profile', err);
+        return res.redirect('/users/sign-in');
+    });    
+}
+
 module.exports.signUp = function(req, res){
     return res.render('user_signup', {
         title: "Codeial | Sign Up"
@@ -9,8 +24,6 @@ module.exports.signUp = function(req, res){
 
 
 module.exports.signIn = function(req, res){
-    console.log(req.cookie);
-    res.cookie('user_id', 25);
     return res.render('user_signin', {
         title: "Codeial | Sign In"
     });
@@ -48,5 +61,4 @@ module.exports.create = function(req, res){
 //Get the sign in data
 module.exports.createSession = function(req, res){
     //TODO later
-    abcd
 }
