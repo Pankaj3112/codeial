@@ -3,6 +3,12 @@ const express = require('express');
 const app = express();
 const port = 8000;
 
+//...Session and Cookies....
+const cookieParser = require('cookie-parser');
+
+app.use(express.urlencoded());
+app.use(cookieParser());
+
 //...Models....
 //Database
 const db = require('./config/mongoose');
@@ -24,7 +30,6 @@ app.set('views', './views');
 //...Controller....
 //Router
 app.use('/', require('./routes'));
-
 
 
 
