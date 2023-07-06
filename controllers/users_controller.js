@@ -2,21 +2,17 @@ const User = require('../model/user');
 
 //Fetch veiws and render them
 module.exports.profile = function(req, res){
-
-    User.findOne({_id: req.cookies.user_id})
-    .then(function(user){
-        return res.render('user_profile', {
-            title: "Codeial | Profile",
-            user: user
-        });
+    return res.render('user_profile', {
+        title: 'Codeial | User Profile'
     })
-    .catch(function(err){
-        console.log('Error in finding user while rendering profile', err);
-        return res.redirect('/users/sign-in');
-    });    
 }
 
+
 module.exports.signUp = function(req, res){
+    if (req.isAuthenticated()) {
+        return res.redirect('/users/profile');
+    }
+
     return res.render('user_signup', {
         title: "Codeial | Sign Up"
     });
@@ -24,6 +20,10 @@ module.exports.signUp = function(req, res){
 
 
 module.exports.signIn = function(req, res){
+    if (req.isAuthenticated()) {
+        return res.redirect('/users/profile');
+    }
+    
     return res.render('user_signin', {
         title: "Codeial | Sign In"
     });
@@ -60,5 +60,15 @@ module.exports.create = function(req, res){
 
 //Get the sign in data
 module.exports.createSession = function(req, res){
-    //TODO later
+    return res.redirect('/');
+}
+
+module.exports.destroySession = function(req, res){
+    req.logout(function(err) {
+        if (err) { 
+            return next(err); 
+        }
+        
+        return res.redirect('/');
+    });
 }
