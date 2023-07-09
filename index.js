@@ -9,6 +9,7 @@ const passport = require('passport');
 const passportLocal = require('./config/passport-local-strategy');
 const MongoStore = require('connect-mongo');
 const expressLayouts = require('express-ejs-layouts');
+const sassMiddleware = require('node-sass-middleware');
 
 
 //using cookie parser
