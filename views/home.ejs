@@ -2,10 +2,34 @@
 <h1>This is Codeial <%= title%></h1>
 <p>Welcome to the home page</p>
 
-<section id="feed-posts">
-    <h4>Posts</h4>
-    <form action="" id="new-post-form" method="POST">
-        <textarea name="content" cols="30" rows="3"></textarea>
-        <input type="submit" value="Post">
-    </form>
+
+<!-- Create new Post -->
+
+<% if(locals.user){ %>
+    <section id="feed-posts">
+        <h4>Posts</h4>
+        <form action="/posts/create" id="new-post-form" method="POST">
+            <textarea name="content" cols="30" rows="3" placeholder="Type here..."></textarea>
+            <input type="submit" value="Post">
+        </form>
+    </section>
+<% } else{ %>
+    <section id="feed-posts">
+        <h4>Posts</h4>
+        <a href="/users/sign-in">Please login to post</a>
+    </section>
+<% } %>
+
+<!-- Show All Posts -->
+<section id="all-posts">
+    <h4>All Posts</h4>
+    <% for(let post of posts){ %>
+        <div class="post">
+            <div class="post-content">
+                <p><%= post.content %></p>
+                <p><%= post.user.name %></p>
+            </div>
+            <hr>
+        </div>
+    <% } %>
 </section>
