@@ -3,6 +3,12 @@ const Posts = require('../model/post');
 module.exports.home = function(req, res){
     Posts.find({})
     .populate('user')
+    .populate({
+        path: 'comments',
+        populate: {
+            path: 'user'
+        }
+    })
     .then(function(posts){
         return res.render('home', {
             title: "Home | Codeial",
