@@ -1,59 +1,49 @@
 
-<h1>This is Codeial <%= title%></h1>
-<p>Welcome to the home page</p>
+<link rel="stylesheet" href="/css/home.css">
 
 
-<!-- Create new Post -->
+<div id="container">
 
-<% if(locals.user){ %>
-    <section id="feed-posts">
-        <h4>Posts</h4>
-        <form action="/posts/create" id="new-post-form" method="POST">
-            <textarea name="content" cols="30" rows="3" placeholder="Type here..."></textarea>
-            <input type="submit" value="Post">
-        </form>
-    </section>
-<% } else{ %>
-    <section id="feed-posts">
-        <h4>Posts</h4>
-        <a href="/users/sign-in">Please login to post</a>
-    </section>
-<% } %>
+    <section id="posts">
+        <!-- Create new Post -->
+        <% if(locals.user){ %>
+            <section id="feed-posts">
+                <h3>Create a new Post</h3>
+                <form action="/posts/create" id="new-post-form" method="POST">
+                    <textarea name="content" cols="30" rows="3" placeholder="Type here..." required></textarea>
+                    <input type="submit" value="Post">
+                </form>
+            </section>
+        <% } else{ %>
+            <section id="feed-posts">
+                <a href="/users/sign-in">Please login to post</a>
+            </section>
+        <% } %>
 
-<!-- Show All Posts -->
-<section id="all-posts">
-    <h4>All Posts</h4>
-    <% for(let post of posts){ %>
-        <div class="post">
-            <!-- Content of the Post -->
-            <div class="post-content">
-                <p><%= post.content %></p>
-                <small><%= post.user.name %></small>
-            </div>
 
-            <!-- Comment Section -->
-            <div class="post-comments">
-                <% if (locals.user){ %>
-                    <form action="/comments/create" id="new-comment-form" method="POST">
-                        <input type="text" name="content" placeholder="Type here to add comment...">
-                        <input type="hidden" name="post" value="<%= post._id %>">
-                        <input type="submit" value="Add Comment">
-                    </form>
-                <% } %>
+        <!-- Show All Posts -->
+        <div id="all-posts">
+            <% for(let post of posts){ %>
+                <!-- To make the variables accesible in diffrent files,
+                we need to send them while including the partial -->
+                <%- include('_post',{post : post}) -%>
                 
-                <div class="post-comments-list">
-                    <ul id="post-comments-<%= post._id %>">
-                        <% for(let comment of post.comments){ %>
-                            <li>
-                                <p><%= comment.content %></p>
-                                <small><%= comment.user.name %></small> 
-                            </li>
-                        <% } %>
-                    </ul>
-                </div>
-            </div>
-
-            <hr>
+            <% } %>
         </div>
+    </section>
+        
+    <!-- Show all Users -->
+    <% if(locals.user) {%>
+        <section id="friends">
+            <h3>Users</h3>
+            <% for(let user of all_users) { %>
+                <p>
+                    <a href="/users/profile/<%= user.id %>">
+                        <%= user.name %>
+                    </a>
+                </p>
+            <% } %>
+        </section>
     <% } %>
-</section>
+
+</div>

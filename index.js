@@ -12,7 +12,11 @@ const expressLayouts = require('express-ejs-layouts');
 
 
 //using cookie parser
-app.use(express.urlencoded());
+app.use(express.urlencoded(
+    {
+        extended: true
+    }
+));
 app.use(cookieParser());
 
 

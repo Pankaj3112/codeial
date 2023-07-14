@@ -1,0 +1,22 @@
+
+        <hr>
+        <h3>Post</h3>
+
+        <!-- delete post button -->
+        <% if (locals.user && locals.user.id == post.user.id){ %>
+            <small>
+                <a href="/posts/destroy/<%= post.id %>">Delete Post</a>
+            </small>
+        <% }%>
+
+        <div class="post">
+            <!-- Content of the Post -->
+            <div class="post-content">
+                <p><%= post.content %></p>
+                <small> by <%= post.user.name %></small>
+            </div>
+
+            <!-- Comment Section -->
+            <%- include('_comment',{post: post}) %>
+            
+        </div>

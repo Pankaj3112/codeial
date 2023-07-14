@@ -1,4 +1,5 @@
 const Posts = require('../model/post');
+const User = require('../model/user');
 
 module.exports.home = function(req, res){
     Posts.find({})
@@ -10,10 +11,16 @@ module.exports.home = function(req, res){
         }
     })
     .then(function(posts){
-        return res.render('home', {
-            title: "Home | Codeial",
-            posts: posts
-        });
+
+        User.find({})
+        .then((users) => {
+            return res.render('home', {
+                title: "Home | Codeial",
+                posts: posts,
+                all_users: users,
+            });
+        })
+        
     })
     .catch(function(err){
         console.log('Error in fetching posts from db --->', err);

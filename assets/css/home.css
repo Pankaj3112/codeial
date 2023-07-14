@@ -1,0 +1,15 @@
+#container {
+  display: flex;
+}
+#container #posts {
+  width: 70%;
+  padding: 10px;
+}
+#container #friends {
+  width: 30%;
+  padding: 10px;
+  border-left: 2px solid rgba(0, 0, 0, 0.281);
+  height: auto;
+}
+
+/*# sourceMappingURL=home.css.map */

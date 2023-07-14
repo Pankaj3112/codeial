@@ -2,9 +2,38 @@ const User = require('../model/user');
 
 //Fetch veiws and render them
 module.exports.profile = function(req, res){
-    return res.render('user_profile', {
-        title: 'Codeial | User Profile'
+    User.findById(req.params.id)
+    .then((user) => {
+        return res.render('user_profile', {
+            title: 'Codeial | User Profile',
+            profile_user : user
+        })
     })
+    .catch((err) => {
+        console.log("Can not fetch user profile", err);
+    })
+}
+
+
+module.exports.update = (req, res) => {
+    if(req.user.id == req.params.id){
+        User.findByIdAndUpdate(req.user.id,
+            // {
+            //     name: req.body.name,
+            //     email: req.body.email
+            // }
+            req.body
+        )
+        .then((user) => {
+            return res.redirect('back');
+        })
+        .catch((err) => {
+            console.log("Error in updating the user info----->", err);
+        })
+    }
+    else{
+        return res.status(401).send('Unauthorized');
+    }
 }
 
 
