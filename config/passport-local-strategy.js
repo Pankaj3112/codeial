@@ -4,21 +4,23 @@ const User = require('../model/user');
 
 passport.use(new LocalStrategy({
         usernameField: 'email',
+        passReqToCallback: true
     },
-    function(email, password, done) {
-      User.findOne({ email: email })
-      .then(function (user){
-        if (!user || user.password != password) { 
-            console.log('Invalid Username/Password');
-            return done(null, false); 
-        }
 
-        return done(null, user);
-      })
-        .catch(function (err) {
-            console.log('Error in finding user --> Passport');
+    async function(req, email, password, done) {
+        try{
+            let user = await User.findOne({ email: email });
+            if (!user || user.password != password) { 
+                req.flash('error', 'Invalid Username/Password');
+                return done(null, false); 
+            }
+
+            return done(null, user);
+        }
+        catch(err){
+            req.flash('error', "Something went wrong");
             return done(err);
-        });
+        }
     }
 ));
 
@@ -29,15 +31,15 @@ passport.serializeUser(function(user, done) {
 });
 
 //deserialize the user from the key in the cookies
-passport.deserializeUser(function(id, done) {
-    User.findById(id)
-    .then(function(user) {
+passport.deserializeUser( async function(id, done) {
+    try{
+        let user = await User.findById(id);
         return done(null, user);
-    })
-    .catch(function(err){
+    }
+    catch(err){
         console.log('Error in finding user --> Passport');
         return done(err);
-    });
+    }
 });
 
 
