@@ -7,6 +7,8 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const passport = require('passport');
 const passportLocal = require('./config/passport-local-strategy');
+const passportJwt = require('./config/passport-jwt-strategy');
+const passportGoogle = require('./config/passport-google-oauth2-strategy');
 const MongoStore = require('connect-mongo');
 const expressLayouts = require('express-ejs-layouts');
 const flash = require('connect-flash');
@@ -56,6 +58,10 @@ app.use(expressLayouts);
 
 //Assets
 app.use(express.static('./assets'));
+
+//make the uploads path available to the browser
+app.use('/uploads', express.static(__dirname + '/uploads'));
+
 app.set('layout extractStyles', true);
 app.set('layout extractScripts', true);
 
