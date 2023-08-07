@@ -2,18 +2,24 @@
     <hr>
     <h3>Post</h3>
 
-    <!-- delete post button -->
-    <% if (locals.user && locals.user.id == post.user.id){ %>
-        <small>
-            <a class="delete-post-button" href="/posts/destroy/<%= post.id %>">Delete Post</a>
-        </small>
-    <% }%>
-
     <div class="post">
         <!-- Content of the Post -->
         <div class="post-content">
             <p><%= post.content %></p>
-            <small> by <%= post.user.name %></small>
+            <p> by <%= post.user.name %></p>
+            <!-- Like button -->
+            <small>
+                <a class="toggle-like-button post-like"  data-likes="<%= post.likes.length %>" href="/likes/toggle/?id=<%= post.id %>&type=Post">
+                    <%= post.likes.length %> Likes
+                </a>
+            </small>
+            &nbsp;
+            <!-- delete post button -->
+            <% if (locals.user && locals.user.id == post.user.id){ %>
+                <small>
+                    <a class="delete-post-button" href="/posts/destroy/<%= post.id %>">Delete Post</a>
+                </small>
+            <% }%>
         </div>
 
         <!-- Comment Section -->

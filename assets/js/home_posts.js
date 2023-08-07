@@ -15,6 +15,21 @@
                     let newPost = newPostDom( data.data.post, data.data.username);
                     $('#all-posts').prepend(newPost);
                     deletePost($(' .delete-post-button', newPost));
+                    
+                    //the comment form should be ajaax
+                    let newCommentForm = document.querySelector(`#post-${data.data.post._id} .new-comment-form`);
+                    newCommentForm.addEventListener("submit", function(e){
+                        e.preventDefault();
+                        newComment(newCommentForm);
+                    });
+
+                    //enable the functionality of the toggle like button on the new post
+                    let btn = document.querySelector('#post-'+data.data.post._id+' .toggle-like-button');
+                    btn.addEventListener("click", function(e){
+                        e.preventDefault();
+                        toggleLike(btn);
+                    });
+
                     flash("Post Created!", 'success');
                 },
                 error: function (error) {
@@ -24,7 +39,6 @@
                 }
             });
         });
-
     }
 
 
@@ -35,21 +49,27 @@
         `<div id="post-${post._id}">
             <hr>
             <h3>Post</h3>
-
-            <!-- delete post button -->
-        
-            <small>
-                <a class="delete-post-button" href="/posts/destroy/${post._id}">Delete Post</a>
-            </small>
             
-
             <div class="post">
-                <!-- Content of the Post -->
-                <div class="post-content">
-                    <p>${post.content}</p>
-                    <small> by ${username} </small>
-                </div>
+            <!-- Content of the Post -->
+            <div class="post-content">
+                <p>${post.content}</p>
+                <p> by ${username} </p>
 
+                <!-- Like button -->
+                <small>
+                    <a class="toggle-like-button post-like" data-likes="0" href="/likes/toggle/?id=${post._id}&type=Post">
+                        0 Likes
+                    </a>
+                </small>
+                &nbsp
+
+                <!-- delete post button -->
+                <small>
+                    <a class="delete-post-button" href="/posts/destroy/${post._id}">Delete Post</a>
+                </small>
+            </div>
+            
                 
                 <!-- Comment Section -->
                 <div class="post-comments">
@@ -136,22 +156,33 @@
         newCommentForm.each(function(){
             $(this).submit(function (e) {
                 e.preventDefault();
-
-                $.ajax({
-                    type: 'post',
-                    url: '/comments/create',
-                    data: $(this).serialize(),
-                    success: function (data) {
-                        let newComment = newCommentDom(data.data.comment, data.data.username);
-                        $(`#post-comments-${data.data.comment.post}`).prepend(newComment);
-                        deleteComment($(' .delete-comment-button', newComment));
-                        flash("Comment Created!", 'success');
-                    },
-                    error: function (error) {
-                        console.log(error.responseText);
-                    }
-                });
+                newComment(this);
             });
+        });
+    }
+
+    let newComment = function (newCommentForm) {
+        $.ajax({
+            type: 'post',
+            url: '/comments/create',
+            data: $(newCommentForm).serialize(),
+            success: function (data) {
+                let newComment = newCommentDom(data.data.comment, data.data.username);
+                $(`#post-comments-${data.data.comment.post}`).prepend(newComment);
+                deleteComment($(' .delete-comment-button', newComment));
+
+                //enable the functionality of the toggle like button on the new post
+                let btn = document.querySelector('#comment-'+data.data.comment._id+' .toggle-like-button');
+                btn.addEventListener("click", function(e){
+                    e.preventDefault();
+                    toggleLike(btn);
+                });
+
+                flash("Comment Created!", 'success');
+            },
+            error: function (error) {
+                console.log(error.responseText);
+            }
         });
     }
 
@@ -162,6 +193,15 @@
             `<li id= "comment-${comment._id}"
                 <p>${comment.content}</p>
                 <small>by ${username} </small> 
+                
+                <br>
+                <!-- Like button -->
+                <small>
+                    <a class="toggle-like-button comment-like" data-likes="0" href="/likes/toggle/?id=${comment._id}&type=Comment">
+                        0 Likes
+                    </a>
+                </small>
+                &nbsp
                 
                 <!-- Delete comment button -->
                 <small>
@@ -203,8 +243,40 @@
     }
 
 
+
+
+    // Likes
+
+    //convert likeLinks to ajax
+    let convertLikesToAjax = function(){
+        let toggleLikebtn = document.querySelectorAll('.toggle-like-button');
+        toggleLikebtn.forEach((btn)=>{
+            btn.addEventListener('click', function(e){
+                e.preventDefault();
+                toggleLike(btn);
+            });
+        })
+    }
+
+    let toggleLike = async function(btn){
+        let data = await fetch(btn.href);
+        data = await data.json();
+        let likeCount = btn.dataset.likes;
+        likeCount = data.data.deleted? --likeCount : ++likeCount;
+        btn.innerHTML = `${likeCount} Likes`;
+        btn.dataset.likes = likeCount;
+
+        let type = btn.classList.contains('post-like')? 'Post' : 'Comment';
+        let msg = data.data.deleted? `Disliked Successfully!` : `Liked Successfully!`;
+        
+        flash(`${type} ${msg}`, 'success');
+    }
+
+
+
     convertPostsToAjax();
     createPost();
     convertCommentsToAjax();
     createComment();
+    convertLikesToAjax();
 }

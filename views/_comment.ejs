@@ -16,13 +16,23 @@
                     <li id= "comment-<%= comment._id %>">
                         <p><%= comment.content %></p>
                         <small>by <%= comment.user.name %></small> 
-                        
+                       
+                        <br>
+                        <!-- Like button -->
+                        <small>
+                            <a class="toggle-like-button comment-like" data-likes="<%= comment.likes.length %>" href="/likes/toggle/?id=<%= comment.id %>&type=Comment">
+                                <%= comment.likes.length %> Likes
+                            </a>
+                        </small>
+                        &nbsp;
+
                         <!-- Delete comment button -->
                         <% if(locals.user && locals.user.id == comment.user.id){ %>
                             <small>
                                 <a class="delete-comment-button" href="/comments/destroy/<%= comment.id %>">Delete Comment</a>
                             </small>
-                        <% } %>
+                        <% } %> 
+
                     </li>
                 <% } %>
             </ul>

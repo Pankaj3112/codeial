@@ -1,6 +1,7 @@
 const Comment = require('../model/comment');
 const Post = require('../model/post');
 const User = require('../model/user');
+const Like = require('../model/like');
 const commentsMailer = require('../mailers/comment_mailer');
 const queue = require('../config/kue');
 const commentEmailWorker = require('../workers/comment_email_worker');
@@ -25,14 +26,14 @@ module.exports.create = async function(req, res){
             
             //sending an  email by kue worker
             // commentsMailer.newComment(comment);
-            let job = queue.create('emails', comment)
-            .save(function(err){
-                if(err){
-                    console.log('Error in sending to the queue', err);
-                    return;
-                }
-                console.log('Job enqueued', job.id);
-            });
+            // let job = queue.create('emails', comment)
+            // .save(function(err){
+            //     if(err){
+            //         console.log('Error in sending to the queue', err);
+            //         return;
+            //     }
+            //     console.log('Job enqueued', job.id);
+            // });
 
             
             if(req.xhr){
@@ -64,6 +65,8 @@ module.exports.destroy = async function(req, res){
 
         if(comment.user == req.user.id){
             let postId = comment.post;
+            //delete likes on comment
+            await Like.deleteMany({likeable: comment, onModel: 'Comment'});
             await comment.deleteOne();
 
             let post = await Post.findById(postId)

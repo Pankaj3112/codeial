@@ -1,6 +1,9 @@
 const User = require('../model/user');
+const ResetPasswordToken = require('../model/reset_password_token');
+const resetPasswordMailer = require('../mailers/reset_password_mailer');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 
 //Fetch veiws and render them
 module.exports.profile = async function(req, res){
@@ -116,3 +119,79 @@ module.exports.destroySession = function(req, res){
     req.flash('success', 'You are logged out');
     return res.redirect('/');
 }
+
+
+//Reset Password
+
+//when user clicks on forgot pw a page opens
+module.exports.forgotPassword = function(req, res){
+    return res.render('forgot_password', {
+        title: "Codeial | Forgot Password"
+    });
+}
+
+//user writes his email and email with resetlink is sent to his email
+module.exports.forgotPasswordPost = async function(req, res){
+    let email = req.body.email;
+
+    let user = await User.findOne({email: email});
+    if(user){
+        let token = await ResetPasswordToken.create({
+            user: user.id,
+            accessToken: crypto.randomBytes(20).toString('hex'),
+            isValid: true
+        });
+
+        token = await token.populate('user', 'name email');
+        resetPasswordMailer.newResetPassword(token);
+        req.flash('success', 'Reset Password Link has been sent to your email');
+        return res.redirect('/users/sign-in');
+    }
+    else{
+        req.flash('error', 'User with this email does not exist');
+        return res.redirect('back');
+    }
+}
+
+//when user clicks on reset password link in his email a new page opens
+module.exports.resetPassword = function(req, res){
+    return res.render('reset_password', {
+        title: "Codeial | Reset Password",
+        token: req.query.token
+    });
+}
+
+//user enters new password and confirm password and clicks on submit
+module.exports.resetPasswordPost = async function(req, res){
+    let password = req.body.password;
+    let confirmPassword = req.body.confirm_password;
+
+    if(password != confirmPassword){
+        req.flash('error', 'Passwords do not match');
+        return res.redirect('back');
+    }
+    
+    try {
+        let token = await ResetPasswordToken.findOne({accessToken: req.query.token});
+        if(token && token.isValid){
+            let user = await User.findById(token.user);
+            user.password = password;
+            user.save();
+            await token.deleteOne();
+
+            req.flash('success', 'Password has been changed successfully');
+            return res.redirect('/users/sign-in');
+        }
+        else{
+            req.flash('error', 'Link has expired');
+            return res.redirect('/users/forgot-password');
+        }
+    } 
+    catch(err){
+        console.log('Error in reset password', err);
+        return res.redirect('back');
+    }
+}
+
+
+
