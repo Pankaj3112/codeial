@@ -1,4 +1,5 @@
 const User = require('../model/user');
+const Friendship = require('../model/friendship');
 const ResetPasswordToken = require('../model/reset_password_token');
 const resetPasswordMailer = require('../mailers/reset_password_mailer');
 const path = require('path');
@@ -8,12 +9,31 @@ const crypto = require('crypto');
 //Fetch veiws and render them
 module.exports.profile = async function(req, res){
     try{
-        let user = await User.findById(req.params.id);
-    
+        let to_user = await User.findById(req.params.id);
+        to_user.isFriend = false;
+
+        //check if friendship already exists or not
+        let toId = to_user._id;
+        let fromId = req.user._id;
+
+        let f1 = await Friendship.findOne({
+            from_user: fromId,
+            to_user: toId
+        });
+
+        let f2 = await Friendship.findOne({
+            from_user: toId,
+            to_user: fromId
+        });
+        
+        if(f1 || f2){
+            to_user.isFriend = true;
+        };
+
         return res.render('user_profile', {
             title: 'Codeial | User Profile',
-            profile_user : user
-        })
+            profile_user : to_user,
+        });
     }
     catch(err){
         console.log("Can not fetch user profile", err);

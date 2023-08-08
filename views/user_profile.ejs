@@ -1,8 +1,6 @@
 
     <link rel="stylesheet" href="/css/user_profile.css">
     
-    <h1>Hello</h1>
-
     <% if (profile_user.avatar) { %>
         <img src="<%= profile_user.avatar %>" alt="<%= profile_user.name %>" width="100">
     <% } %>
@@ -18,6 +16,14 @@
     <%} else{%>
         <h1><%= profile_user.name%></h1>
         <h2><%= profile_user.email%></h2>
+
+        <a href="/friends/toggle-friend/<%= profile_user.id %>">
+            <% if(profile_user.isFriend) { %>
+                <button>Unfollow</button>
+            <% }else { %>
+                <button>Follow</button>
+            <% } %>
+        </a>
     <%}%>
      
 

@@ -34,18 +34,74 @@
         
     <!-- Show all Users -->
     <% if(locals.user) {%>
-        <section id="friends">
-            <h3>Users</h3>
-            <% for(let user of all_users) { %>
-                <p>
-                    <a href="/users/profile/<%= user.id %>">
-                        <%= user.name %>
-                    </a>
-                </p>
-            <% } %>
+        <section id="people">
+            
+            <div id="friends">
+                <h3>Friends</h3>
+
+                <% for(let friend of friendships) { %>
+
+                    <%if (friend.to_user._id == locals.user.id) { %>
+                        <p>
+                            <a href="/users/profile/<%= friend.from_user._id %>">
+                                <%= friend.from_user.name %>
+                            </a>
+
+                            &nbsp;
+                            <button class="chat-button" data-id="<%= friend.from_user.email %>">Chat</button>
+
+                            &nbsp;
+                            <a href="/friends/toggle-friend/<%= friend.from_user._id %>">
+                                <button>Unfollow</button>
+                            </a>
+                        </p>
+                    <%}%>
+
+                    <%if (friend.from_user._id == locals.user.id) { %>
+                        <p>
+                            <a href="/users/profile/<%= friend.to_user._id %>">
+                                <%= friend.to_user.name %>
+                            </a>
+
+                            &nbsp;
+                            <button class="chat-button" data-id="<%= friend.to_user.email %>">Chat</button>
+
+                            &nbsp;
+                            <a href="/friends/toggle-friend/<%= friend.to_user._id %>">
+                                <button>Unfollow</button>
+                            </a>
+                        </p>
+                    <%}%>
+                <%}%> 
+            </div>
+
+            <div id="users">
+                <h3>Users</h3>
+                <% for(let user of all_users) { %>
+                    <p>
+                        <a href="/users/profile/<%= user.id %>">
+                            <%= user.name %>
+                        </a>
+                    </p>
+                <% } %>
+            </div>
         </section>
     <% } %>
+
+    <% if(locals.user){ %>
+        <%- include('_chatbox') %>
+    <%}%>
 
 </div>
 
 <script src="/js/home_posts.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+<script src="/js/chat_engine.js"></script>
+       
+<% if(locals.user){%>
+    <script>
+        new ChatEngine('chat-box','<%= locals.user.email %>');
+    </script>
+<%}%>
+
