@@ -1,9 +1,10 @@
+const env = require('./environment');
 //require library
 const mongoose = require('mongoose');
 
 //connect to database
 async function main() {
-    const db = await mongoose.connect('mongodb://127.0.0.1:27017/codeial_development');
+    const db = await mongoose.connect(`mongodb://127.0.0.1:27017/${env.db}`);
     module.exports = db;
 }
 

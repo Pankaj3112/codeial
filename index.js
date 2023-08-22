@@ -1,7 +1,9 @@
 //Express server
 const express = require('express');
+const env = require('./config/environment');
+const logger = require('morgan');
 const app = express();
-const port = 8000;
+const port = process.env.port || 8000;
 const db = require('./config/mongoose');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
@@ -13,6 +15,7 @@ const MongoStore = require('connect-mongo');
 const expressLayouts = require('express-ejs-layouts');
 const flash = require('connect-flash');
 const customMware = require('./config/middleware');
+require('./config/view-helper')(app);
 
 
 //setting up the chat server to be used with socket.io
@@ -35,7 +38,7 @@ app.use(cookieParser());
 app.use(session({
     name: 'codeial',
     //TODO change the secret before deployment in production mode
-    secret: 'blahsomething',
+    secret: env.session_cookie_key,
     saveUninitialized: false,
     resave: false,
     cookie: {
@@ -65,7 +68,7 @@ app.use(customMware.setflash);
 app.use(expressLayouts);
 
 //Assets
-app.use(express.static('./assets'));
+app.use(express.static(env.asset_path));
 
 //make the uploads path available to the browser
 app.use('/uploads', express.static(__dirname + '/uploads'));
@@ -77,16 +80,18 @@ app.set('layout extractScripts', true);
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
+//logger
+app.use(logger(env.morgan.mode, env.morgan.options));
+
 
 //...Controller....
 //Router
 app.use('/', require('./routes'));
-
 
 app.listen(port, function(err){
     if(err){
         console.log(`Error in running the server: ${err}`);
         return;
     }
-    console.log(`Server is running on port ${port}`);
+    console.log(`Server is running on port ${port}, in ${env.name} mode`);
 });
