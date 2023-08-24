@@ -2,7 +2,7 @@
 module.exports.chatSockets = function(socketServer){
     let io = require('socket.io')(socketServer, {
         cors: {
-            origin: "http://50.19.136.219/:8000", 
+            origin: "http://50.19.136.219:8000", 
             methods: ["GET", "POST"],
             credentials: true
         }

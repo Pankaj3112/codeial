@@ -1,4 +1,3 @@
 node_modules/
 ignore.txt 
-public/assets/css/
-public/assets/js/
+public
