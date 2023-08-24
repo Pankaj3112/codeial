@@ -1,3 +1,5 @@
 node_modules/
 ignore.txt 
 public
+production_logs
+
