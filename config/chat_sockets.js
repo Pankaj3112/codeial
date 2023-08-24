@@ -8,8 +8,6 @@ module.exports.chatSockets = function(socketServer){
         }
     });
 
-    console.log(origin)
-
     let rooms = [];
 
     io.sockets.on('connection', function(socket){
