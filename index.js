@@ -16,6 +16,13 @@ const expressLayouts = require('express-ejs-layouts');
 const flash = require('connect-flash');
 const customMware = require('./config/middleware');
 require('./config/view-helper')(app);
+const cors = require('cors');
+
+
+// Allow requests from a specific origin
+app.use(cors({
+  origin: 'http://50.19.136.219:8000'
+}));
 
 
 //setting up the chat server to be used with socket.io
