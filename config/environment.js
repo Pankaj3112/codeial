@@ -28,7 +28,7 @@ const development = {
     
     google_client_ID: "308721804967-uq8pc246k5ldglp6ad77mre6fjbi3v28.apps.googleusercontent.com",
     google_client_Secret: "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",
-    google_callback_URL: "http://localhost:8000/users/auth/google/callback",
+    google_callback_URL: "http://50.19.136.219/:8000/users/auth/google/callback",
     jwt_key: 'codeial',
     morgan: {
         mode: 'dev',
@@ -64,4 +64,4 @@ const production = {
 
 module.exports = eval(process.env.NODE_ENV) == undefined ? development : eval(process.env.NODE_ENV);
 
-// module.exports = development;
+// module.exports = production;
